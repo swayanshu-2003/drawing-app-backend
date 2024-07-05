@@ -11,8 +11,25 @@ const server = app.listen(4000, () => {
 
 const wss = new WebSocketServer({ server });
 
-app.use(cors());
+// Enable CORS for all origins
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
+    credentials: true
+}));
+
 app.use(express.json());
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    next();
+});
 
 let elements = [];
 let users = [];
@@ -21,13 +38,13 @@ app.post('/', (req, res) => {
     elements = (req.body);
     res.status(200).json({
         elements: elements
-    })
-})
+    });
+});
 
 app.get("/", (req, res) => {
     res.status(200).json({
         elements: elements
-    })
+    });
 });
 
 let userCount = 1;
